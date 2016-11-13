@@ -1,6 +1,82 @@
-.pl{
+/** BEM  - Block-Element-Modificator. Read more: https://en.bem.info/toolbox/sdk/bem-naming/ */
+.playlist{
+}
+
+.playlist-songs{
+	display: none;
+}
+
+.playlist-open{
 	min-height: 280px;
-    width: 600px;
+    /*width: 600px;*/
     background: #f16043;
     border-radius: 150px;
 } 
+
+
+.playlist-open .playlist-button, .playlist-open .playlist-title{
+	display: none;
+}
+
+.playlist-open .playlist-img{
+	float: left;
+    margin-top: 15px;
+}
+
+.playlist-open .playlist-songs{
+	display: block;
+}
+
+
+
+.playlist-title{
+	text-align: center;
+	font-size: 20px;
+}
+
+.playlist-img{
+	width: 250px;
+	height: 250px;
+	border-radius: 50%;
+	margin: auto;
+	background-size: cover!important;
+    background-repeat: no-repeat!important;
+}
+
+.playlist-button{
+	background: white;
+    border-radius: 50%;
+    display: block;
+    position: relative;
+	margin: auto;
+
+}
+.playlist-button-del{
+	font-size: 20px;
+    padding: 3px 6px;
+	width: 35px;
+    height: 35px;
+	
+}
+
+.playlist-button-edit{
+	font-size: 20px;
+    padding: 3px 6px;
+	width: 35px;
+    height: 35px;
+	
+}
+
+.playlist-butto-play{
+	font-size: 40px;
+    padding: 3px 6px;
+	width: 45px;
+    height: 45px;
+	top: 20%;
+	
+}
+
+audio{
+	margin:auto;
+}
+
