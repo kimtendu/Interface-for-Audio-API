@@ -80,3 +80,16 @@ audio{
 	margin:auto;
 }
 
+
+#search-res{
+	position: absolute;
+    top: 100%;
+    background: white;
+        border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px 20px 10px 0px;
+    min-width: 95%;
+    z-index: 100;
+
+}
+
