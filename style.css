@@ -14,7 +14,7 @@
 } 
 
 
-.playlist-open .playlist-button, .playlist-open .playlist-title{
+ .playlist-open .playlist-title{
 	display: none;
 }
 

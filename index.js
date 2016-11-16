@@ -1,38 +1,28 @@
 //Controllers
 /*
 Classes
-
 All Playlist - class for all playlist
 	construction - get all and print, and make listener 
-
 Playlist(number of list)- class of specifict PL
 	construction - get and print
 	Songs lists - Create song - add new class song(id song )
 	Create PL
 	Update PL info
 	Delete PL 
-
 winamp - 
 	constuctor
 	playsong
 	nextsong
 	
-
 Song(id pl, id song) - get specific song --DONT NEED IT
-	constructor - get and print
-	Update - update song info
-
-Functions ( old version ) :
-	Created:
-	* Get all playlists
-	* Get specific playlist
-	* Get song from pl
-
-	New
-	* Create new pl
-	* update  pl info
-	* up song info
-	* Delete pl
+	constructor - 
+	toView
+	Play
+	Stop
+	loadtoPlayer
+	
+Search
+	construct
 
 */
 var arrPLlist = [], //array of all Playlists
@@ -79,12 +69,13 @@ class Playlist{
 			//songs = document.createElement('div'),
 			//audio = document.createElement('audio'),
 			del = document.createElement('span'),
-			edit = document.createElement('a'),
+			edit = document.createElement('span'),
 			play = document.createElement('span');
 
 		var div = this._div,
 			songs = this._songs,
-			audio = this._audio;
+			audio = this._audio,
+			parent = this;
 			
 		div.id = this._id;
 		div.classList = 'col-md-3 Playlist';
@@ -113,6 +104,8 @@ class Playlist{
 
 		play.addEventListener("click", function(){
 			arrPLlist[div.id].showSong(div, audio, songs);
+			parent.openPanel(div);
+			arrPLlist[div.id]._arrSongs[0].play();
 			}, false);
 		
 		edit.addEventListener("click", function(){
@@ -130,17 +123,11 @@ class Playlist{
 			audio = this._audio;
 		this.msglog = ajaxRequest(this._id+'/songs', 'GET');		
 		this.msglog = this.msglog.data.songs;
-		//console.log(this.msglog);
-		//this._arrSongs = this.msglog;
-		//here starts view of the song
-		//div.classList='col-md-12 playlist-open'; //add that class to parent div - open it
-		var self = this;
-		self.openPanel(div);
 		for( var i=0; i< this.msglog.length; i++){
 			this._arrSongs[i] = new Song(i, this.msglog[i].name, this.msglog[i].url, songs, audio);			
 			this._arrSongs[i].toView();
 		}
-		this._arrSongs[0].play();
+		//this._arrSongs[0].play();
 		//arrPLlist[div.id].playSong(arrPLlist[div.id]._arrSongs[this.getAttribute("data-id")].url, audio);
 		//audio.src=this.msglog[0].url;
 	}//show all posible songs by making songs class instance
@@ -165,6 +152,7 @@ class Playlist{
 		//console.log(song);
 		audio.src=song;
 	}//Play the chothen song
+	
 	deletePL(){
 		//console.log('delete' + this._id);
 		var serverAnsewer = ajaxRequest(this._id, 'DELETE');
@@ -176,19 +164,26 @@ class Playlist{
 	}//delete playlist
 	
 	editPL(){
-		console.log('edit Paylist'  + this._id);
+		//console.log('edit Paylist'  + this._id);
 		var mElHead = document.getElementById('modal-title'),
 			mElBbody = document.getElementById('modal-body'),
 		 	mElfooter = document.getElementById('modal-footer'),
+			mElSongs = document.createElement('div'),
 		 	mElPLName = document.createElement('input'),
 		 	mElPLImage = document.createElement('input'),
 		 	mElnext = document.createElement('button'),
 		 	mElreset = document.createElement('button'),
 		 	mElfinish = document.createElement('button'),
-		 	mainPL=this;
+		 	mainPL=this,
+			arrSongsTmp = [];
 
+		mainPL.showSong();
+		
+		mElHead.innerHTML="";
+		mElBbody.innerHTML="";
+		mElfooter.innerHTML="";
+		
 		mElHead.innerHTML="Edit PlayList "+ this._name;
-
 		mElPLName.classList="form-control";
 		mElPLName.setAttribute('value', this._name);
 		mElPLName.setAttribute('placeholder', this._name);
@@ -199,34 +194,64 @@ class Playlist{
 		mElBbody.appendChild(mElPLName);
 		mElBbody.appendChild(mElPLImage);
 
-
+		mElSongs.classList="Songs-list"
+		
 		mElnext.classList="btn btn-primary";
 		mElreset.classList="btn btn-danger";
 		mElnext.innerHTML="Next";
 		mElreset.innerHTML="Reset";
 		mElfooter.appendChild(mElnext);
 		mElfooter.appendChild(mElreset);
+		
+		mElSongs.innerHTML="<hr>";
+		
+		for(var i=0; i < arrPLlist[mainPL._id]._arrSongs.length; i++){
+			var TmpElInputName = document.createElement('input'),
+				TmpElInputUrl = document.createElement('input');
+			
+			TmpElInputName.classList="form-control col-md-6";
+			TmpElInputUrl.classList="form-control col-md-6";
+			
+			TmpElInputName.id = i+'-name';
+			TmpElInputUrl.id=i+'-url';;
 
+			TmpElInputName.value = arrPLlist[mainPL._id]._arrSongs[i]._name;
+			TmpElInputUrl.value = arrPLlist[mainPL._id]._arrSongs[i]._url;
+			
+			mElSongs.appendChild(TmpElInputName);
+			mElSongs.appendChild(TmpElInputUrl);
+		}
+
+		mElBbody.appendChild(mElSongs);
+		
 		mElnext.addEventListener("click", function(){
-			mainPL._name = mElPLName.value;
-			mainPL._image = mElPLImage.value;
-			console.log(typeof (mainPL._name));
-			var ajtmp = '{ name: "'+ mainPL._name+'"}';
-			console.log(ajtmp);
+			var data = {};
+			if ( mainPL._name != mElPLName.value ) data.name = mElPLName.value;
+			if ( mainPL._image != mElPLImage.value ) data.image = mElPLImage.value;		
+			//console.log(data);			
+			var serAnsw = jqueryRequest(mainPL._id, 'POST', data);
 			
-			var data = {
-				name: mainPL._name,
-				image: mainPL._image
-			},
-			serAnsw = jqueryRequest(mainPL._id, 'POST', data);
+			var tmpArr={"songs": []}
+			for(var i=0; i < arrPLlist[mainPL._id]._arrSongs.length; i++){
+				var tmpName = document.getElementById(i+'-name');
+				//if (tmpName.value != arrPLlist[mainPL._id]._arrSongs[i]._name){
+					var tmpUrl = document.getElementById(i+'-url');			
+					tmpArr.songs.push({"name" : tmpName.value, "url": tmpUrl.value});
+				//}	
+			}
+			//console.log(tmpArr);
 			
+			var requst = jqueryRequest(mainPL._id +'/songs/', "POST", tmpArr);
+			if (requst != false) all.toView;
 
 		});
 
 		mElreset.addEventListener("click", function(){
-
+			mElPLName.value = mainPL._name;
+			mElPLImage.value = mainPL._image;
 		});
-
+		
+		
 
 		$('#myModal').modal('toggle');
 
@@ -295,7 +320,6 @@ class Search{
    				ulSearch.appendChild(liTmp);
    				/*liTmp.addEventListener('click', function(){
    					arrPLlist[key].showSong();
-
    				})
    				* function for playing from search
 				*/
@@ -355,4 +379,3 @@ function jqueryRequest(endpont, method, dataa, async){
 	
 
 }
-
