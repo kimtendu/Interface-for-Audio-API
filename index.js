@@ -213,24 +213,12 @@ class Playlist{
 			console.log(typeof (mainPL._name));
 			var ajtmp = '{ name: "'+ mainPL._name+'"}';
 			console.log(ajtmp);
-			/*
+			
 			var data = {
 				name: mainPL._name,
 				image: mainPL._image
 			},
-			serAnsw = ajaxRequest(mainPL._id, 'POST', data);
-			console.log(JSON.stringify(data));
-			*/
-			
-			$.ajax({
-				method: "POST",
-				url: strEndpoint + mainPL._id,
-			  data:  { name: mElPLName.value}
-				//data: ajtmp
-			})
-			.done(function( msg ) {
-			    console.log( "Data Saved: " + msg );
-			});
+			serAnsw = jqueryRequest(mainPL._id, 'POST', data);
 			
 
 		});
@@ -340,7 +328,7 @@ function ajaxRequest(endpont, method, dataa, async){
 		strEndpointTPl = strEndpoint + endpont;
 	xhrEndpointTPL.open(method, strEndpointTPl, async);
 	
-	xhrEndpointTPL.send({ name: "Chicagggg"});
+	xhrEndpointTPL.send(JSON.stringify(dataa));
 	if (xhrEndpointTPL.status != 200) {  			
 		//msg = xhrEndpointTPL.status + ': ' + xhrEndpointTPL.statusText; 
 		msg = false;
@@ -353,12 +341,11 @@ function ajaxRequest(endpont, method, dataa, async){
 
 
 function jqueryRequest(endpont, method, dataa, async){
-	console.log(dataa)
+	
 	$.ajax({
-	  method: "POST",
-	  url: strEndpoint + endpont,
-	  //data: dataa
-	   data: { name: "Chicagg"}
+		method: "POST",
+		url: strEndpoint + endpont,
+		data: dataa
 	})
 	  .done(function( msg ) {
 	    console.log( "Data Saved: " + msg );
